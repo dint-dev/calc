@@ -26,15 +26,15 @@ void main() {
       expect(builder.tensorShape, TensorShape(2, 3));
       expect(builder.elements, hasLength(6));
 
-      // Change shape
+      // Change shape to bigger
       builder.tensorShape = TensorShape(5, 6);
       expect(builder.tensorShape, TensorShape(5, 6));
       expect(builder.elements, hasLength(30));
 
-      // Change shape
+      // Change shape to smaller
       builder.tensorShape = TensorShape(3, 4);
       expect(builder.tensorShape, TensorShape(3, 4));
-      expect(builder.elements, hasLength(30));
+      expect(builder.elements, hasLength(12));
 
       // Build
       expect(builder.build().tensorShape, TensorShape(3, 4));

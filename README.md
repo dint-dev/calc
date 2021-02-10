@@ -20,7 +20,7 @@ request [in Github](https://github.com/dint-dev/math).
 In _pubspec.yaml_:
 ```yaml
 dependencies:
-  calc: ^0.2.0
+  calc: ^0.2.0+1
 ```
 
 ## 2.Use it

@@ -29,12 +29,13 @@ class Float32TensorBuilder extends FloatTensorBuilder {
 
   TensorShape _tensorShape = TensorShape.scalar;
 
+  Float32List _elements = _emptyData;
+
   @override
-  Float32List elements = _emptyData;
+  Float32List get elements => _elements;
 
   Float32Tensor? _recycled;
-
-  List<double>? _recycledData;
+  List<double>? _recycledElements;
 
   @override
   TensorShape get tensorShape => _tensorShape;
@@ -46,7 +47,9 @@ class Float32TensorBuilder extends FloatTensorBuilder {
     if (elements.length < n) {
       final newData = Float32List(n);
       newData.setAll(0, elements);
-      elements = newData;
+      _elements = newData;
+    } else if (elements.length>n) {
+      _elements = Float32List.view(elements.buffer, elements.offsetInBytes, n);
     }
   }
 
@@ -57,16 +60,16 @@ class Float32TensorBuilder extends FloatTensorBuilder {
     final recycled = _recycled;
     if (recycled != null &&
         recycled.tensorShape == tensorShape &&
-        identical(_recycledData, elements)) {
+        identical(_recycledElements, elements)) {
       if (!recycle) {
         _tensorShape = TensorShape.scalar;
-        this.elements = _emptyData;
+        _elements = _emptyData;
       }
       return recycled;
     }
     if (!recycle) {
       _tensorShape = TensorShape.scalar;
-      this.elements = _emptyData;
+      _elements = _emptyData;
     }
     final length = tensorShape.numberOfElements;
     if (elements.length != length) {
@@ -77,7 +80,7 @@ class Float32TensorBuilder extends FloatTensorBuilder {
         final result = Float32Vector.withFloat32List(elements);
         if (recycle) {
           _recycled = result;
-          _recycledData = elements;
+          _recycledElements = elements;
         }
         return result;
       case 2:
@@ -87,7 +90,7 @@ class Float32TensorBuilder extends FloatTensorBuilder {
         );
         if (recycle) {
           _recycled = result;
-          _recycledData = elements;
+          _recycledElements = elements;
         }
         return result;
       default:

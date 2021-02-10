@@ -1,5 +1,5 @@
 name: calc
-version: 0.2.0
+version: 0.2.0+1
 description: A package for performing calculations. Tensors (vectors, matrices), probability
   distributions, and more.
 homepage: https://github.com/dint-dev/calc
