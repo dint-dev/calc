@@ -63,5 +63,6 @@ extension NumIterableCalc<T extends num> on Iterable<T> {
   double standardDeviation() => sqrt(variance());
 
   /// Constructs an iterable of tensors.
-  Iterable<Vector<double>> toTensors() => map((e) => Float32Vector([e.toDouble()]));
+  Iterable<Vector<double>> toTensors() =>
+      map((e) => Float32Vector([e.toDouble()]));
 }

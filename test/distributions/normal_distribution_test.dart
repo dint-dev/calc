@@ -82,14 +82,18 @@ void main() {
         hasLength(lessThan(400)),
       );
     });
-    test('sample() when mean = 100, variance = 100, n = 1000 has no values near 0', () {
+    test(
+        'sample() when mean = 100, variance = 100, n = 1000 has no values near 0',
+        () {
       final distribution = NormalDistribution(mean: 100.0, variance: 100.0);
       expect(
         distribution.sampleList(1000).where((e) => e < 1.0),
         isEmpty,
       );
     });
-    test('sample() when mean = 100, variance = 10 000, n = 1000 has values near 0', () {
+    test(
+        'sample() when mean = 100, variance = 10 000, n = 1000 has values near 0',
+        () {
       final distribution = NormalDistribution(mean: 100.0, variance: 10000.0);
       expect(
         distribution.sampleList(1000).where((e) => e < 1.0),

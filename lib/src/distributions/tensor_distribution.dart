@@ -56,7 +56,7 @@ abstract class TensorDistribution<T> extends Distribution<Tensor<T>> {
     final shape = iterable.first.tensorShape;
     assert(iterable.skip(1).every((element) => element.tensorShape == shape));
     return TensorDistribution.generate(shape, (shape, index) {
-      return scalarFitter(iterable.map((e) => e.getFlat(index)));
+      return scalarFitter(iterable.map((e) => e.elements[index]));
     });
   }
 
@@ -93,7 +93,8 @@ class _TensorDistribution<T> extends Distribution<Tensor<T>>
   );
 
   @override
-  int get hashCode => shape.hashCode ^ const ListEquality<Distribution>().hash(distributions);
+  int get hashCode =>
+      shape.hashCode ^ const ListEquality<Distribution>().hash(distributions);
 
   @override
   bool operator ==(Object other) {

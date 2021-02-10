@@ -30,7 +30,8 @@ import 'package:calc/calc.dart';
 ///   print('Predicted Y: $y');
 /// }
 /// ```
-class LinearTensorModel extends PredictiveModel<Tensor<double>, Tensor<double>> {
+class LinearTensorModel
+    extends PredictiveModel<Tensor<double>, Tensor<double>> {
   final Tensor<double> coefficients;
   final Tensor<double> constants;
 

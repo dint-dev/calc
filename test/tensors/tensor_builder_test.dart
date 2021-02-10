@@ -24,17 +24,17 @@ void main() {
       // Change shape
       builder.tensorShape = TensorShape(2, 3);
       expect(builder.tensorShape, TensorShape(2, 3));
-      expect(builder.data, hasLength(6));
+      expect(builder.elements, hasLength(6));
 
       // Change shape
       builder.tensorShape = TensorShape(5, 6);
       expect(builder.tensorShape, TensorShape(5, 6));
-      expect(builder.data, hasLength(30));
+      expect(builder.elements, hasLength(30));
 
       // Change shape
       builder.tensorShape = TensorShape(3, 4);
       expect(builder.tensorShape, TensorShape(3, 4));
-      expect(builder.data, hasLength(30));
+      expect(builder.elements, hasLength(30));
 
       // Build
       expect(builder.build().tensorShape, TensorShape(3, 4));
@@ -48,22 +48,22 @@ void main() {
         // (0,0)
         builder.setXY(0, 0, 5);
         expect(builder.getXY(0, 0), 5);
-        expect(builder.data, [5, 0, 0, 0, 0, 0]);
+        expect(builder.elements, [5, 0, 0, 0, 0, 0]);
 
         // (1,0)
         builder.setXY(1, 0, 6);
         expect(builder.getXY(1, 0), 6);
-        expect(builder.data, [5, 6, 0, 0, 0, 0]);
+        expect(builder.elements, [5, 6, 0, 0, 0, 0]);
 
         // (0,1)
         builder.setXY(0, 1, 7);
         expect(builder.getXY(0, 1), 7);
-        expect(builder.data, [5, 6, 7, 0, 0, 0]);
+        expect(builder.elements, [5, 6, 7, 0, 0, 0]);
 
         // Last index
         builder.setXY(1, 2, 8);
         expect(builder.getXY(1, 2), 8);
-        expect(builder.data, [5, 6, 7, 0, 0, 8]);
+        expect(builder.elements, [5, 6, 7, 0, 0, 8]);
       });
 
       test('invalid indices', () {
@@ -96,12 +96,12 @@ void main() {
       // Build
       final built = builder.build();
       expect(built.tensorShape, TensorShape(2, 3));
-      expect(built.elements(), hasLength(6));
+      expect(built.elements, hasLength(6));
       expect(built.isZero, isTrue);
 
       // Builder has been reset
       expect(builder.tensorShape, TensorShape.scalar);
-      expect(builder.data, isEmpty);
+      expect(builder.elements, isEmpty);
 
       // New changes have no impact on the built tensor
       builder.tensorShape = TensorShape(2, 3);
@@ -121,12 +121,12 @@ void main() {
       // build(recycle:true)
       final built1 = builder.build(recycle: true);
       expect(built1.tensorShape, TensorShape(2, 3));
-      expect(built1.elements(), hasLength(6));
+      expect(built1.elements, hasLength(6));
       expect(built1.isZero, isTrue);
 
       // TensorBuilder has not been reset
       expect(builder.tensorShape, TensorShape(2, 3));
-      expect(builder.data, same(built1.elements()));
+      expect(builder.elements, same(built1.elements));
 
       // Changes in the builder are visible in the built tensor.
       builder.setXY(0, 0, 1);
@@ -142,7 +142,7 @@ void main() {
 
       // TensorBuilder has been reset
       expect(builder.tensorShape, TensorShape.scalar);
-      expect(builder.data, isEmpty);
+      expect(builder.elements, isEmpty);
       builder.tensorShape = built1.tensorShape;
 
       // build(recycle:true) should not return a recycled tensor
@@ -151,69 +151,151 @@ void main() {
     });
 
     group('Mathematical operations', () {
+      test('abs()', () {
+        final builder = Float32TensorBuilder();
+        builder.tensorShape = TensorShape(3);
+        builder.elements[0] = -2;
+        builder.elements[2] = 3;
+        builder.abs();
+        expect(builder.elements, [2, 0, 3]);
+      });
+
       test('add()', () {
         final builder = Float32TensorBuilder();
         builder.tensorShape = TensorShape(3);
-        builder.data[0] = -2.0;
-        builder.data[2] = 3.5;
+        builder.elements[0] = -2.0;
+        builder.elements[2] = 3.5;
         builder.add(builder.build(recycle: true));
-        expect(builder.data, [-4, 0, 7]);
+        expect(builder.elements, [-4, 0, 7]);
+      });
+
+      test('ceil()', () {
+        final builder = Float32TensorBuilder();
+        builder.tensorShape = TensorShape(3);
+        builder.elements[0] = -1.7;
+        builder.elements[2] = 2.3;
+        builder.ceil();
+        expect(builder.elements, [-1, 0, 3]);
+      });
+
+      test('cos()', () {
+        final builder = Float32TensorBuilder();
+        builder.tensorShape = TensorShape(3);
+        builder.elements[0] = pi;
+        builder.elements[2] = pi / 2;
+        builder.cos();
+        expect(builder.elements, [-1, 1, -4.371138828673793e-8]);
       });
 
       test('div()', () {
         final left = Float32TensorBuilder();
         left.tensorShape = TensorShape(3);
-        left.data[0] = -4.0;
-        left.data[2] = 3.0;
+        left.elements[0] = -4.0;
+        left.elements[2] = 3.0;
         left.div(left.build(recycle: true));
-        expect(left.data[0], 1.0);
-        expect(left.data[1], isNaN);
-        expect(left.data[2], 1.0);
+        expect(left.elements[0], 1.0);
+        expect(left.elements[1], isNaN);
+        expect(left.elements[2], 1.0);
+      });
+
+      test('exp()', () {
+        final builder = Float32TensorBuilder();
+        builder.tensorShape = TensorShape(3);
+        builder.elements[0] = 2;
+        builder.elements[2] = 3;
+        builder.exp();
+        expect(builder.elements, [7.389056205749512, 1.0, 20.08553695678711]);
+      });
+
+      test('floor()', () {
+        final builder = Float32TensorBuilder();
+        builder.tensorShape = TensorShape(3);
+        builder.elements[0] = -1.7;
+        builder.elements[2] = 2.3;
+        builder.floor();
+        expect(builder.elements, [-2, 0, 2]);
+      });
+
+      test('log()', () {
+        final builder = Float32TensorBuilder();
+        builder.tensorShape = TensorShape(3);
+        builder.elements[0] = 2;
+        builder.elements[2] = 3;
+        builder.log();
+        expect(builder.elements,
+            [0.6931471824645996, double.negativeInfinity, 1.0986123085021973]);
       });
 
       test('mul()', () {
         final builder = Float32TensorBuilder();
         builder.tensorShape = TensorShape(3);
-        builder.data[0] = -2.0;
-        builder.data[2] = 3.0;
+        builder.elements[0] = -2.0;
+        builder.elements[2] = 3.0;
         builder.mul(builder.build(recycle: true));
-        expect(builder.data, [4.0, 0, 9.0]);
+        expect(builder.elements, [4.0, 0, 9.0]);
       });
 
       test('neg()', () {
         final builder = Float32TensorBuilder();
         builder.tensorShape = TensorShape(3);
-        builder.data[0] = -2.0;
-        builder.data[2] = 3.5;
+        builder.elements[0] = -2.0;
+        builder.elements[2] = 3.5;
         builder.neg();
-        expect(builder.data, [2.0, 0, -3.5]);
+        expect(builder.elements, [2.0, 0, -3.5]);
       });
 
-      test('elementsSq()', () {
+      test('pow()', () {
         final builder = Float32TensorBuilder();
         builder.tensorShape = TensorShape(3);
-        builder.data[0] = 0.5;
-        builder.data[2] = 1.5;
+        builder.elements[0] = 2;
+        builder.elements[2] = 3;
+        builder.pow(Float32Vector([4, 0, 2]));
+        expect(builder.elements, [16, 1, 9]);
+      });
+
+      test('round()', () {
+        final builder = Float32TensorBuilder();
+        builder.tensorShape = TensorShape(3);
+        builder.elements[0] = -1.7;
+        builder.elements[2] = 2.3;
+        builder.round();
+        expect(builder.elements, [-2, 0, 2]);
+      });
+
+      test('sin()', () {
+        final builder = Float32TensorBuilder();
+        builder.tensorShape = TensorShape(3);
+        builder.elements[0] = pi;
+        builder.elements[2] = pi / 2;
+        builder.sin();
+        expect(builder.elements, [-8.742277657347586e-8, 0, 1]);
+      });
+
+      test('sq()', () {
+        final builder = Float32TensorBuilder();
+        builder.tensorShape = TensorShape(3);
+        builder.elements[0] = 0.5;
+        builder.elements[2] = 1.5;
         builder.sq();
-        expect(builder.data, [0.25, 0, 2.25]);
+        expect(builder.elements, [0.25, 0, 2.25]);
       });
 
       test('sqrt()', () {
         final builder = Float32TensorBuilder();
         builder.tensorShape = TensorShape(2);
-        builder.data[0] = 0.25;
-        builder.data[1] = 2.25;
+        builder.elements[0] = 0.25;
+        builder.elements[1] = 2.25;
         builder.sqrt();
-        expect(builder.data, [0.5, 1.5]);
+        expect(builder.elements, [0.5, 1.5]);
       });
 
       test('sub()', () {
         final builder = Float32TensorBuilder();
         builder.tensorShape = TensorShape(3);
-        builder.data[0] = -2.0;
-        builder.data[2] = 3.5;
+        builder.elements[0] = -2.0;
+        builder.elements[2] = 3.5;
         builder.sub(builder.build(recycle: true));
-        expect(builder.data, [0.0, 0, 0.0]);
+        expect(builder.elements, [0.0, 0, 0.0]);
       });
     });
   });

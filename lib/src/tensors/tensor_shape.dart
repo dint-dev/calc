@@ -120,7 +120,7 @@ class TensorShape {
 
   /// Gets `w` dimension of a flat index (see [flatten]).
   int getW(int i) {
-    if (i<0 || i>=numberOfElements) {
+    if (i < 0 || i >= numberOfElements) {
       throw ArgumentError.value(i);
     }
     final w = this.w;
@@ -132,7 +132,7 @@ class TensorShape {
 
   /// Gets `x` dimension of a flat index (see [flatten]).
   int getX(int i) {
-    if (i<0 || i>=numberOfElements) {
+    if (i < 0 || i >= numberOfElements) {
       throw ArgumentError.value(i);
     }
     return i % x;
@@ -140,7 +140,7 @@ class TensorShape {
 
   /// Gets `y` dimension of a flat index (see [flatten]).
   int getY(int i) {
-    if (i<0 || i>=numberOfElements) {
+    if (i < 0 || i >= numberOfElements) {
       throw ArgumentError.value(i);
     }
     final y = this.y;
@@ -152,7 +152,7 @@ class TensorShape {
 
   /// Gets `z` dimension of a flat index (see [flatten]).
   int getZ(int i) {
-    if (i<0 || i>=numberOfElements) {
+    if (i < 0 || i >= numberOfElements) {
       throw ArgumentError.value(i);
     }
     final z = this.z;

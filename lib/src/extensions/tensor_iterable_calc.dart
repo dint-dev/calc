@@ -70,7 +70,7 @@ extension TensorIterableCalc<T extends Tensor> on Iterable<T> {
       squaredBuilder.setTensor(item);
       squaredBuilder.sub(mean);
       squaredBuilder.sq();
-      resultBuilder.add(squaredBuilder.build(recycle:true));
+      resultBuilder.add(squaredBuilder.build(recycle: true));
       n++;
     }
     resultBuilder.divScalar(n);

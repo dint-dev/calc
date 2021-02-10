@@ -39,7 +39,7 @@ extension ComparableCalc<T extends Comparable> on Iterable<T> {
   T max() {
     T? result;
     for (var item in this) {
-      if (result == null || item.compareTo(result)>0) {
+      if (result == null || item.compareTo(result) > 0) {
         result = item;
       }
     }
@@ -55,7 +55,7 @@ extension ComparableCalc<T extends Comparable> on Iterable<T> {
   T min() {
     T? result;
     for (var item in this) {
-      if (result == null || item.compareTo(result)<0) {
+      if (result == null || item.compareTo(result) < 0) {
         result = item;
       }
     }

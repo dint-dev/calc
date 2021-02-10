@@ -1,6 +1,6 @@
 name: calc
-version: 0.1.0
-description: Calculations for Dart developers. Tensors / vectors / matrices, probability
+version: 0.2.0
+description: A package for performing calculations. Tensors (vectors, matrices), probability
   distributions, and more.
 homepage: https://github.com/dint-dev/calc
 

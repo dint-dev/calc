@@ -64,14 +64,14 @@ class TensorPairs<T extends Tensor> {
       throw ArgumentError('Arguments are empty');
     }
     final xVariance = x.variance();
-    if (xVariance.elements().contains(0.0)) {
+    if (xVariance.elements.contains(0.0)) {
       if (xVariance.isScalar) {
         throw ArgumentError('Variance of `x` is zero');
       }
       throw ArgumentError('Variance of `x` has a zero element');
     }
     final yVariance = y.variance();
-    if (yVariance.elements().contains(0.0)) {
+    if (yVariance.elements.contains(0.0)) {
       if (yVariance.isScalar) {
         throw ArgumentError('Variance of `y` is zero');
       }
@@ -111,7 +111,7 @@ class TensorPairs<T extends Tensor> {
     late Tensor sum;
     for (var i = 0; i < n; i++) {
       final term = (x[i] - meanX) * (y[i] - meanY);
-      if (i==0) {
+      if (i == 0) {
         sum = term;
       } else {
         sum += term;
@@ -131,7 +131,8 @@ class TensorPairs<T extends Tensor> {
   ///   final correlation = pairs.correlation().toScalar();
   /// }
   /// ```
-  static TensorPairs<Tensor<double>> fromScalarLists<S extends num>(Iterable<S> x, Iterable<S> y) {
+  static TensorPairs<Tensor<double>> fromScalarLists<S extends num>(
+      Iterable<S> x, Iterable<S> y) {
     return TensorPairs.fromTensorLists(
       x.toTensors().toList(),
       y.toTensors().toList(),
@@ -149,9 +150,11 @@ class TensorPairs<T extends Tensor> {
   ///   final samples = SamplesXY<int>.generateFromX(x, (x) => 2*x);
   /// }
   /// ```
-  static TensorPairs<Tensor<double>> generateFromScalarList(Iterable<num> x, num Function(num x) function) {
+  static TensorPairs<Tensor<double>> generateFromScalarList(
+      Iterable<num> x, num Function(num x) function) {
     final xList = x.toList();
-    final yList = List<double>.generate(xList.length, (i) => function(xList[i]).toDouble());
+    final yList = List<double>.generate(
+        xList.length, (i) => function(xList[i]).toDouble());
     return TensorPairs.fromScalarLists(xList, yList);
   }
 }

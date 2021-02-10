@@ -31,10 +31,10 @@ import 'package:calc/calc.dart';
 /// ```
 abstract class Vector<T> extends Tensor<T> with IterableMixin<T> {
   @override
-  Iterator<T> get iterator => elements().iterator;
+  Iterator<T> get iterator => elements.iterator;
 
   /// Returns an element of the vector.
-  T operator [](int index) => elements()[index];
+  T operator [](int index) => elements[index];
 
   Matrix<T> toMatrixColumn();
 

@@ -28,7 +28,7 @@ import 'package:calc/calc.dart';
 abstract class Tensor<T> {
   @override
   int get hashCode =>
-      tensorShape.hashCode ^ const ListEquality().hash(elements());
+      tensorShape.hashCode ^ const ListEquality().hash(elements);
 
   /// Tells whether the tensor is a scalar.
   bool get isScalar => tensorShape == TensorShape.scalar;
@@ -37,7 +37,7 @@ abstract class Tensor<T> {
   bool get isZero;
 
   /// Returns number of elements in the tensor.
-  int get length => elements().length;
+  int get length => elements.length;
 
   /// Returns shape of the tensor.
   TensorShape get tensorShape;
@@ -101,15 +101,15 @@ abstract class Tensor<T> {
   bool operator ==(Object other) {
     return other is Tensor<T> &&
         tensorShape == other.tensorShape &&
-        const ListEquality().equals(elements(), other.elements());
+        const ListEquality().equals(elements, other.elements);
   }
 
   /// Returns elements as a list.
-  List<T> elements();
+  List<T> get elements;
 
-  /// Returns element using flat indexing.
+  @deprecated
   T getFlat(int index) {
-    return elements()[index];
+    return elements[index];
   }
 
   /// Multiplies every element by scalar `s`.
@@ -132,7 +132,8 @@ abstract class Tensor<T> {
   }
 
   /// Calculates square of each element.
-  Tensor<T> clamp(T lowerLimit, T upperLimit) => (toBuilder()..clamp(lowerLimit, upperLimit)).build();
+  Tensor<T> clamp(T lowerLimit, T upperLimit) =>
+      (toBuilder()..clamp(lowerLimit, upperLimit)).build();
 
   /// Calculates square of each element.
   Tensor<T> sq() => (toBuilder()..sq()).build();
@@ -143,7 +144,7 @@ abstract class Tensor<T> {
   /// Constructs a [TensorBuilder] that has this tensor.
   ///
   /// If [copy] is `false`, this is tensor is not copied to the builder.
-  TensorBuilder<T> toBuilder({bool copy=true});
+  TensorBuilder<T> toBuilder({bool copy = true});
 
   /// Returns a scalar when the tensor has only a single element;
   ///
@@ -151,7 +152,7 @@ abstract class Tensor<T> {
   T toScalar() {
     final tensorShape = this.tensorShape;
     if (tensorShape == TensorShape.scalar) {
-      return elements().single;
+      return elements.single;
     }
     throw UnsupportedError('Shape of the tensor is not a scalar: $tensorShape');
   }
@@ -159,20 +160,20 @@ abstract class Tensor<T> {
   static Tensor<double> filled(TensorShape shape, [double value = 0.0]) {
     final builder = Float32TensorBuilder();
     builder.tensorShape = shape;
-    final data =builder.data;
+    final data = builder.elements;
     data.fillRange(0, data.length, value);
     return builder.build();
   }
 
   static Tensor<double> generate(
-      TensorShape shape,
-      double Function(TensorShape shape, int i) generator,
-      ) {
+    TensorShape shape,
+    double Function(TensorShape shape, int i) generator,
+  ) {
     final builder = Float32TensorBuilder();
     builder.tensorShape = shape;
     final n = shape.numberOfElements;
-    for (var i=0;i<n;i++) {
-      builder.data[i] = generator(shape, i);
+    for (var i = 0; i < n; i++) {
+      builder.elements[i] = generator(shape, i);
     }
     return builder.build();
   }

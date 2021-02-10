@@ -30,14 +30,14 @@ void main() {
     });
 
     test('toMatrixRow()', () {
-      final vector = Float32Vector([1,2,3]);
+      final vector = Float32Vector([1, 2, 3]);
       final matrix = vector.toMatrixRow();
       expect(matrix.width, 3);
       expect(matrix.height, 1);
     });
 
     test('toMatrixColumn()', () {
-      final vector = Float32Vector([1,2,3]);
+      final vector = Float32Vector([1, 2, 3]);
       final matrix = vector.toMatrixColumn();
       expect(matrix.width, 1);
       expect(matrix.height, 3);

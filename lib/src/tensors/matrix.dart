@@ -63,15 +63,15 @@ abstract class Matrix<T> extends Tensor<T> {
     final builder = toBuilder();
     final width = this.width;
     builder.tensorShape = TensorShape(1, width);
-    for (var i=0;i<width;i++) {
-      builder.setXY(0,i, getXY(i,i));
+    for (var i = 0; i < width; i++) {
+      builder.setXY(0, i, getXY(i, i));
     }
     builder.tensorShape = TensorShape(width);
     return builder.build() as Float32Vector;
   }
 
   @override
-  List<T> elements() => _data;
+  List<T> get elements => _data;
 
   /// Gets matrix element.
   T getXY(int x, int y) {
@@ -81,7 +81,7 @@ abstract class Matrix<T> extends Tensor<T> {
     if (y >= height) {
       throw ArgumentError.value(y, 'y');
     }
-    return elements()[y * width + x];
+    return elements[y * width + x];
   }
 
   /// Computes matrix product.
@@ -91,7 +91,7 @@ abstract class Matrix<T> extends Tensor<T> {
   Matrix<T> transpose() {
     final builder = toBuilder();
     builder.tensorShape = TensorShape(tensorShape.y, tensorShape.x);
-    for (var y=0;y<height;y++) {
+    for (var y = 0; y < height; y++) {
       for (var x = 0; x < width; x++) {
         builder.setXY(y, x, getXY(x, y));
       }

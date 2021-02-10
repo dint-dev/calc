@@ -25,7 +25,7 @@ void main() {
       final clone = TensorDistribution.filled(
         TensorShape(2, 3),
         NormalDistribution(mean: 0, variance: 1.0),
-      );// Relative frequencies are just scaled.
+      ); // Relative frequencies are just scaled.
       final other0 = TensorDistribution.filled(
         TensorShape(2, 9999),
         NormalDistribution(mean: 0, variance: 1.0),

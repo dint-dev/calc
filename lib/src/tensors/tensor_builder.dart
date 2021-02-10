@@ -15,8 +15,11 @@
 import 'package:calc/calc.dart';
 
 abstract class TensorBuilder<T> {
-  /// Data, which may contain more elements than `length`.
-  List<T> get data;
+  /// Elements of the tensor.
+  List<T> get elements;
+
+  @deprecated
+  List<T> get data => elements;
 
   /// Length of the tensor.
   int get length => tensorShape.numberOfElements;
@@ -25,64 +28,119 @@ abstract class TensorBuilder<T> {
   TensorShape get tensorShape;
   set tensorShape(TensorShape value);
 
-  /// Adds elements of the argument (`x = x + argument`).
+  /// Calculates absolute value for each element.
   ///
-  /// The value of element `i` will be:
+  /// Element `i` is calculated with the formula:
   /// ```
-  /// elements[i] = elements[i] + right[i]
+  /// x[i] = x[i].abs();
+  /// ```
+  void abs();
+
+  /// Calculates sum of two tensors.
+  ///
+  /// Element `i` is calculated with the formula:
+  /// ```
+  /// x[i] = x[i] + right[i];
   /// ```
   ///
   /// Throws [ArgumentError] if tensor shapes is non-equal.
   void add(Tensor<T> right);
 
-  /// Builds tensor and resets [data] to empty list.
+  /// Builds tensor and resets [elements] to empty list.
   ///
-  /// If [recycle] is `true`, [data] is not reset and the tensor will be
+  /// If [recycle] is `true`, [elements] is not reset and the tensor will be
   /// recycled the next [build] is called (only if [tensorShape] is equal and
-  /// [data] is identical).
-  Tensor<T> build({bool recycle=false});
+  /// [elements] is identical).
+  Tensor<T> build({bool recycle = false});
+
+  /// Calculates `ceil` for each element.
+  ///
+  /// Element `i` is calculated with the formula:
+  /// ```
+  /// x[i] = x[i].ceil();
+  /// ```
+  void ceil();
 
   /// Clamps elements of this tensor.
   ///
   /// Throws [ArgumentError] if tensor shapes is non-equal.
   void clamp(T lowerLimit, T upperLimit);
 
-  /// Divides elements by elements of the argument.
+  /// Calculates `cos` for each element.
   ///
-  /// The value of element `i` will be:
+  /// Element `i` is calculated with the formula:
   /// ```
-  /// elements[i] = elements[i] / right[i]
+  /// x[i] = cos(x[i]);
   /// ```
+  void cos();
+
+  /// Calculates fraction of two tensors.
+  ///
+  /// Element `i` is calculated with the formula:
+  /// ```
+  /// x[i] = x[i] / right[i];
+  /// ```
+  ///
+  /// If [swapArguments] is `true`, the arguments will be swapped.
   ///
   /// Throws [ArgumentError] if tensor shapes is non-equal.
-  void div(Tensor<T> right);
+  void div(Tensor<T> right, {bool swapArguments = false});
 
-  /// Divides elements by a scalar.
+  /// Divides elements.
   void divScalar(num value);
 
-  /// Rounds elements.
-  void round();
+  /// Calculates exponent for each element.
+  ///
+  /// Element `i` is calculated with the formula:
+  /// ```
+  /// x[i] = exp(x[i]);
+  /// ```
+  void exp();
+
+  /// Fills each element with the argument.
+  ///
+  /// Element `i` is calculated with the formula:
+  /// ```
+  /// x[i] = value;
+  /// ```
+  void fill(T value);
+
+  /// Calculates `floor` for each element.
+  ///
+  /// Element `i` is calculated with the formula:
+  /// ```
+  /// x[i] = x[i].floor();
+  /// ```
+  void floor();
 
   /// Gets element value.
   T getXY(int x, int y) {
     final tensorShape = this.tensorShape;
-    if (tensorShape.numberOfDimensions!=2) {
+    if (tensorShape.numberOfDimensions != 2) {
       throw ArgumentError('Shape of the tensor is: $tensorShape');
     }
-    if (x<0 || x>=tensorShape.x) {
+    if (x < 0 || x >= tensorShape.x) {
       throw ArgumentError.value(x, 'x');
     }
-    if (y<0 || y>=tensorShape.y) {
+    if (y < 0 || y >= tensorShape.y) {
       throw ArgumentError.value(y, 'y');
     }
-    return data[x+tensorShape.x*y];
+    return elements[x + tensorShape.x * y];
   }
 
-  /// Multiplies elements by elements of the argument.
+  /// Calculates logarithm for each element.
   ///
-  /// The value of element `i` will be:
+  /// Element `i` is calculated with the formula:
   /// ```
-  /// elements[i] = elements[i] * right[i]
+  /// x[i] = log(x[i]);
+  /// ```
+  void log();
+
+  /// Multiplies elements.
+  ///
+  /// Element `i` is calculated with the formula:
+  /// ```
+  /// x[i] = x[i] * right[i];
   /// ```
   ///
   /// Throws [ArgumentError] if tensor shapes is non-equal.
@@ -92,7 +150,27 @@ abstract class TensorBuilder<T> {
   void mulScalar(num value);
 
   /// Negates elements.
+  ///
+  /// Element `i` is calculated with the formula:
+  /// ```
+  /// x[i] = -x[i];
+  /// ```
   void neg();
+
+  /// Calculates `pow(a,b)` for each element.
+  ///
+  /// Element `i` is calculated with the formula:
+  /// ```
+  /// x[i] = pow(x[i], right[i]);
+  /// ```
+  ///
+  /// If [swapArguments] is `true`, base and power arguments will be swapped.
+  ///
+  /// Throws [ArgumentError] if tensor shapes is non-equal.
+  void pow(Tensor<T> right, {bool swapArguments = false});
+
+  /// Rounds elements.
+  void round();
 
   /// Initializes shape and element values with the tensor.
   void setTensor(Tensor<T> tensor);
@@ -100,36 +178,62 @@ abstract class TensorBuilder<T> {
   /// Sets element value.
   void setXY(int x, int y, T value) {
     final tensorShape = this.tensorShape;
-    if (tensorShape.numberOfDimensions!=2) {
+    if (tensorShape.numberOfDimensions != 2) {
       throw ArgumentError('Shape of the tensor is: $tensorShape');
     }
-    if (x<0 || x>=tensorShape.x) {
+    if (x < 0 || x >= tensorShape.x) {
       throw ArgumentError.value(x, 'x');
     }
-    if (y<0 || y>=tensorShape.y) {
+    if (y < 0 || y >= tensorShape.y) {
       throw ArgumentError.value(y, 'y');
     }
-    data[x+tensorShape.x*y] = value;
+    elements[x + tensorShape.x * y] = value;
   }
 
-  /// Squares elements (`x = x*x`).
+  /// Calculates `sin` for each element.
+  ///
+  /// Element `i` is calculated with the formula:
+  /// ```
+  /// x[i] = sin(x[i]);
+  /// ```
+  void sin();
+
+  /// Calculates `a*a` for each element.
+  ///
+  /// Element `i` is calculated with the formula:
+  /// ```
+  /// x[i] = x[i] * x[i];
+  /// ```
   void sq();
 
-  /// Square roots elements (`x = x*x`).
+  /// Calculates [sqrt] for each element.
+  ///
+  /// Element `i` is calculated with the formula:
+  /// ```
+  /// x[i] = sqrt(x[i]);
+  /// ```
   void sqrt();
 
   /// Subtracts elements of the arguments.
   ///
-  /// The value of element `i` will be:
+  /// Element `i` is calculated with the formula:
   /// ```
-  /// elements[i] = elements[i] - right[i]
+  /// x[i] = x[i] - right[i];
   /// ```
   ///
   /// Throws [ArgumentError] if tensor shapes is non-equal.
   void sub(Tensor<T> right);
 
+  /// Calculates `tan` for each element.
+  ///
+  /// Element `i` is calculated with the formula:
+  /// ```
+  /// x[i] = tan(x[i]);
+  /// ```
+  void tan();
+
   /// Constructs a new [TensorBuilder] that has this tensor.
   ///
   /// If `copy` is `false`, this tensor is not copied to the tensor builder.
-  TensorBuilder<T> toBuilder({bool copy=true});
+  TensorBuilder<T> toBuilder({bool copy = true});
 }

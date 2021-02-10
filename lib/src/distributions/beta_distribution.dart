@@ -19,9 +19,7 @@ class BetaDistribution extends ContinuousDistribution {
 
   @override
   bool operator ==(Object other) =>
-      other is BetaDistribution &&
-          a == other.a &&
-          b == other.b;
+      other is BetaDistribution && a == other.a && b == other.b;
 
   @override
   double cdf(double x) {

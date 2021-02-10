@@ -13,14 +13,21 @@
 // limitations under the License.
 
 import 'package:calc/calc.dart';
-import 'package:test/test.dart';
 
-void main() {
-  group('DiscreteDistribution', () {
-    test('map(...)', () {
-      final distribution = BinomialDistribution(p: 0.5, n: 2)
-          .map<List>((value) => List.filled(value, null));
-      expect(distribution.sample(), isA<List>());
-    });
-  });
+class Float64TensorBuilder extends FloatTensorBuilder {
+  @override
+  TensorShape tensorShape = TensorShape.scalar;
+
+  @override
+  Tensor<double> build({bool recycle = false}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  List<double> get elements => throw UnimplementedError();
+
+  @override
+  TensorBuilder<double> toBuilder({bool copy = true}) {
+    throw UnimplementedError();
+  }
 }

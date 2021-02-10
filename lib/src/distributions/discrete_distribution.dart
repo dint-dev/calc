@@ -54,7 +54,6 @@ abstract class DiscreteDistribution<T> extends Distribution<T> {
   double pmf(T value);
 }
 
-
 class _MappedDiscreteDistribution<A, B> extends DiscreteDistribution<B> {
   final DiscreteDistribution<A> _distribution;
   final B Function(A value) _function;

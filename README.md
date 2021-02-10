@@ -20,7 +20,7 @@ request [in Github](https://github.com/dint-dev/math).
 In _pubspec.yaml_:
 ```yaml
 dependencies:
-  calc: ^0.1.0
+  calc: ^0.2.0
 ```
 
 ## 2.Use it
@@ -49,6 +49,8 @@ expect _dart:math_ to have drastic changes that would break semantic versioning 
     * [Matrix](https://pub.dev/documentation/calc/latest/calc/Matrix-class.html)
     * [Vector](https://pub.dev/documentation/calc/latest/calc/Vector-class.html)
   * [TensorBuilder](https://pub.dev/documentation/calc/latest/calc/TensorBuilder-class.html)
+    * [Float32TensorBuilder](https://pub.dev/documentation/calc/latest/calc/Float32TensorBuilder-class.html)
+    * [Float64TensorBuilder](https://pub.dev/documentation/calc/latest/calc/Float64TensorBuilder-class.html)
 
 ## Probability and statistics
 Classes:
