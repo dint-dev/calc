@@ -108,16 +108,28 @@ class TensorPairs<T extends Tensor> {
     }
     final meanX = x.mean();
     final meanY = y.mean();
-    late Tensor sum;
+    final sum = meanX.toBuilder(copy: false);
+    final tmp0 = sum.toBuilder(copy: false);
+    final tmp1 = sum.toBuilder(copy: false);
     for (var i = 0; i < n; i++) {
-      final term = (x[i] - meanX) * (y[i] - meanY);
+      // x[i] - meanX
+      tmp0.setTensor(x[i]);
+      tmp0.sub(meanX);
+
+      // y[i] - meanY
+      tmp1.setTensor(y[i]);
+      tmp1.sub(meanY);
+
+      // (x[i] - meanX) * (y[i] - meanY)
+      tmp0.mul(tmp1.build(recycle: true));
       if (i == 0) {
-        sum = term;
+        sum.setTensor(tmp0.build(recycle: true));
       } else {
-        sum += term;
+        sum.add(tmp0.build(recycle: true));
       }
     }
-    return sum.scale(1 / n) as T;
+    sum.divScalar(n);
+    return sum.build() as T;
   }
 
   /// Constructs [TensorPairs] from two lists of [int] or [double] values.

@@ -48,7 +48,7 @@ class Float32TensorBuilder extends FloatTensorBuilder {
       final newData = Float32List(n);
       newData.setAll(0, elements);
       _elements = newData;
-    } else if (elements.length>n) {
+    } else if (elements.length > n) {
       _elements = Float32List.view(elements.buffer, elements.offsetInBytes, n);
     }
   }

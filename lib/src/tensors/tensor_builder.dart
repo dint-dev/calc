@@ -15,11 +15,11 @@
 import 'package:calc/calc.dart';
 
 abstract class TensorBuilder<T> {
-  /// Elements of the tensor.
-  List<T> get elements;
-
   @deprecated
   List<T> get data => elements;
+
+  /// Elements of the tensor.
+  List<T> get elements;
 
   /// Length of the tensor.
   int get length => tensorShape.numberOfElements;
@@ -43,7 +43,7 @@ abstract class TensorBuilder<T> {
   /// x[i] = x[i] + right[i];
   /// ```
   ///
-  /// Throws [ArgumentError] if tensor shapes is non-equal.
+  /// Throws [ArgumentError] if tensor shapes are not equal.
   void add(Tensor<T> right);
 
   /// Builds tensor and resets [elements] to empty list.
@@ -63,7 +63,7 @@ abstract class TensorBuilder<T> {
 
   /// Clamps elements of this tensor.
   ///
-  /// Throws [ArgumentError] if tensor shapes is non-equal.
+  /// Throws [ArgumentError] if tensor shapes are not equal.
   void clamp(T lowerLimit, T upperLimit);
 
   /// Calculates `cos` for each element.
@@ -76,24 +76,40 @@ abstract class TensorBuilder<T> {
 
   /// Calculates fraction of two tensors.
   ///
-  /// Element `i` is calculated with the formula:
+  /// The formula for result element `i` is:
   /// ```
-  /// x[i] = x[i] / right[i];
+  /// x[i] = x[i] / scalar;
   /// ```
   ///
-  /// If [swapArguments] is `true`, the arguments will be swapped.
+  /// If [swapArguments] is true, the formula is:
+  /// ```
+  /// x[i] = scalar / x[i];
+  /// ```
   ///
-  /// Throws [ArgumentError] if tensor shapes is non-equal.
-  void div(Tensor<T> right, {bool swapArguments = false});
+  /// If denominator is 0.0, the result is [double.nan] when using
+  /// floating-point numbers and 0 when using integers. If [noNan] is true,
+  /// the result is 0 when using floating-point numbers.
+  ///
+  /// Throws [ArgumentError] if tensor shapes are not equal.
+  ///
+  /// Throws [ArgumentError] if tensor shapes are not equal.
+  void div(Tensor<T> right, {bool noNan = false, bool swapArguments = false});
 
   /// Divides elements.
-  void divScalar(num value);
+  ///
+  /// # Example
+  /// ```
+  /// // Element i will be:
+  /// //     y[i]=1/x[i]
+  /// tensor.divScalar(1, swapArguments:true);
+  /// ```
+  void divScalar(num value, {bool noNan = false, bool swapArguments = false});
 
   /// Calculates exponent for each element.
   ///
   /// Element `i` is calculated with the formula:
   /// ```
-  /// x[i] = exp(x[i]);
+  /// exp(x[i]);
   /// ```
   void exp();
 
@@ -136,6 +152,26 @@ abstract class TensorBuilder<T> {
   /// ```
   void log();
 
+  /// Calculates element-wise maximum of the two tensors.
+  ///
+  /// Element `i` is calculated with the formula:
+  /// ```
+  /// x[i] = max(x[i], right[i]);
+  /// ```
+  ///
+  /// Throws [ArgumentError] if tensor shapes are not equal.
+  void max(Tensor<T> right);
+
+  /// Calculates element-wise minimum of the two tensors.
+  ///
+  /// Element `i` is calculated with the formula:
+  /// ```
+  /// x[i] = min(x[i], right[i]);
+  /// ```
+  ///
+  /// Throws [ArgumentError] if tensor shapes are not equal.
+  void min(Tensor<T> right);
+
   /// Multiplies elements.
   ///
   /// Element `i` is calculated with the formula:
@@ -143,7 +179,7 @@ abstract class TensorBuilder<T> {
   /// x[i] = x[i] * right[i];
   /// ```
   ///
-  /// Throws [ArgumentError] if tensor shapes is non-equal.
+  /// Throws [ArgumentError] if tensor shapes are not equal.
   void mul(Tensor<T> right);
 
   /// Multiplies elements by a scalar.
@@ -166,7 +202,7 @@ abstract class TensorBuilder<T> {
   ///
   /// If [swapArguments] is `true`, base and power arguments will be swapped.
   ///
-  /// Throws [ArgumentError] if tensor shapes is non-equal.
+  /// Throws [ArgumentError] if tensor shapes are not equal.
   void pow(Tensor<T> right, {bool swapArguments = false});
 
   /// Rounds elements.
@@ -221,7 +257,7 @@ abstract class TensorBuilder<T> {
   /// x[i] = x[i] - right[i];
   /// ```
   ///
-  /// Throws [ArgumentError] if tensor shapes is non-equal.
+  /// Throws [ArgumentError] if tensor shapes are not equal.
   void sub(Tensor<T> right);
 
   /// Calculates `tan` for each element.

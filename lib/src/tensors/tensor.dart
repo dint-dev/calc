@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:collection/collection.dart';
 import 'package:calc/calc.dart';
+import 'package:collection/collection.dart';
+import 'package:meta/meta.dart';
 
 /// Superclass for tensors where elements may be integers, real numbers, or
 /// complex numbers.
@@ -26,6 +27,9 @@ import 'package:calc/calc.dart';
 ///   * [Float32Vector]
 ///
 abstract class Tensor<T> {
+  /// Returns elements as a list.
+  List<T> get elements;
+
   @override
   int get hashCode =>
       tensorShape.hashCode ^ const ListEquality().hash(elements);
@@ -44,9 +48,12 @@ abstract class Tensor<T> {
 
   /// Calculates element-wise product.
   ///
-  /// The formula for result element `i` is `result[i] = left[i] * right[i]`.
+  /// The formula for result element `i` is:
+  /// ```
+  /// elements[i] * right.elements[i];
+  /// ```
   ///
-  /// The returned tensor will have identical type and [tensorShape].
+  /// Throws [ArgumentError] if tensor shapes are not equal.
   Tensor<T> operator *(Tensor<T> right) {
     final builder = toBuilder();
     builder.mul(right);
@@ -55,9 +62,12 @@ abstract class Tensor<T> {
 
   /// Calculates element-wise sum.
   ///
-  /// The formula for result element `i` is `result[i] = left[i] + right[i]`.
+  /// The formula for result element `i` is:
+  /// ```
+  /// elements[i] + right.elements[i];
+  /// ```
   ///
-  /// The returned tensor will have identical type and [tensorShape].
+  /// Throws [ArgumentError] if tensor shapes are not equal.
   Tensor<T> operator +(Tensor<T> right) {
     final builder = toBuilder();
     builder.add(right);
@@ -66,9 +76,12 @@ abstract class Tensor<T> {
 
   /// Calculates element-wise difference.
   ///
-  /// The formula for result element `i` is `result[i] = left[i] - right[i]`.
+  /// The formula for result element `i` is:
+  /// ```
+  /// elements[i] - right.elements[i];
+  /// ```
   ///
-  /// The returned tensor will have identical type and [tensorShape].
+  /// Throws [ArgumentError] if tensor shapes are not equal.
   Tensor<T> operator -(Tensor<T> right) {
     final builder = toBuilder();
     builder.sub(right);
@@ -77,7 +90,10 @@ abstract class Tensor<T> {
 
   /// Calculates `scale(-1.0)`.
   ///
-  /// The formula for result element `i` is `result[i] = -this[i]`.
+  /// The formula for result element `i` is:
+  /// ```
+  /// -elements[i];
+  /// ```
   ///
   /// The returned tensor will have identical type and [tensorShape].
   Tensor<T> operator -() {
@@ -86,16 +102,9 @@ abstract class Tensor<T> {
     return builder.build();
   }
 
-  /// Calculates element-wise fraction.
-  ///
-  /// The formula for result element `i` is `result[i] = left[i] / right[i]`.
-  ///
-  /// The returned tensor will have identical type and [tensorShape].
-  Tensor<T> operator /(Tensor<T> right) {
-    final builder = toBuilder();
-    builder.div(right);
-    return builder.build();
-  }
+  /// A shorthand for [div].
+  @nonVirtual
+  Tensor<T> operator /(Tensor<T> right) => div(right);
 
   @override
   bool operator ==(Object other) {
@@ -104,42 +113,162 @@ abstract class Tensor<T> {
         const ListEquality().equals(elements, other.elements);
   }
 
-  /// Returns elements as a list.
-  List<T> get elements;
+  /// Calculates `x.ceil()` for each element.
+  Tensor<T> ceil() => (toBuilder()..ceil()).build();
 
-  @deprecated
+  /// Calculates `x.clamp(lowerLimit, upperLimit)` for each element.
+  Tensor<T> clamp(T lowerLimit, T upperLimit) =>
+      (toBuilder()..clamp(lowerLimit, upperLimit)).build();
+
+  /// Calculates `cos(x)` for each element.
+  Tensor<T> cos() => (toBuilder()..cos()).build();
+
+  /// Calculates element-wise fraction.
+  ///
+  /// The formula for result element `i` is:
+  /// ```
+  /// elements[i] / right.elements[i];
+  /// ```
+  ///
+  /// Throws [ArgumentError] if tensor shapes are not equal.
+  Tensor<T> div(
+    Tensor<T> right, {
+    bool noNan = false,
+  }) {
+    final builder = toBuilder();
+    builder.div(right, noNan: noNan);
+    return builder.build();
+  }
+
+  /// Calculates element-wise fraction.
+  ///
+  /// The formula for result element `i` is:
+  /// ```
+  /// elements[i] / scalar;
+  /// ```
+  ///
+  /// If [swapArguments] is true, the formula is:
+  /// ```
+  /// scalar / this[i];
+  /// ```
+  ///
+  /// If denominator is 0.0, the result is [double.nan] when using
+  /// floating-point numbers and 0 when using integers. If [noNan] is true,
+  /// the result is 0 when using floating-point numbers.
+  ///
+  /// Throws [ArgumentError] if tensor shapes are not equal.
+  ///
+  /// # Example
+  /// ```
+  /// // Element i will be:
+  /// //     1/x[i];
+  /// tensor.divScalar(1, swapArguments:true);
+  /// ```
+  Tensor<T> divScalar(
+    num right, {
+    bool noNan = false,
+    bool swapArguments = false,
+  }) {
+    final builder = toBuilder();
+    builder.divScalar(right, noNan: noNan, swapArguments: swapArguments);
+    return builder.build();
+  }
+
+  /// Calculates `exp(x)` for each element.
+  ///
+  /// Throws [ArgumentError] if tensor shapes are not equal.
+  Tensor<T> exp() => (toBuilder()..exp()).build();
+
+  /// Calculates `x.floor()` for each element.
+  Tensor<T> floor() => (toBuilder()..floor()).build();
+
+  @Deprecated('Use `elements`')
   T getFlat(int index) {
     return elements[index];
   }
 
-  /// Multiplies every element by scalar `s`.
+  /// Calculates `log(x)` for each element.
   ///
-  /// The returned tensor will have identical type and [tensorShape].
-  Tensor scale(num s) {
+  /// Throws [ArgumentError] if tensor shapes are not equal.
+  Tensor<T> log() => (toBuilder()..log()).build();
+
+  /// Calculates element-wise maximum.
+  ///
+  /// The formula for result element `i` is:
+  /// ```
+  /// result[i] = max(elements[i], right.elements[i]);
+  /// ```
+  ///
+  /// Throws [ArgumentError] if tensor shapes are not equal.
+  Tensor<T> max(Tensor<T> right) {
+    final builder = toBuilder();
+    builder.max(right);
+    return builder.build();
+  }
+
+  /// Calculates element-wise minimum.
+  ///
+  /// The formula for result element `i` is:
+  /// ```
+  /// min(elements[i], right.elements[i]);
+  /// ```
+  ///
+  /// Throws [ArgumentError] if tensor shapes are not equal.
+  Tensor<T> min(Tensor<T> right) {
+    final builder = toBuilder();
+    builder.min(right);
+    return builder.build();
+  }
+
+  /// Multiplies tensor elements with a scalar.
+  ///
+  /// The formula for result element `i` is:
+  /// ```
+  /// s * elements[i];
+  /// ```
+  ///
+  /// Throws [ArgumentError] if tensor shapes are not equal.
+  Tensor mulScalar(num s) {
     final builder = toBuilder();
     builder.mulScalar(s);
     return builder.build();
   }
 
-  /// Divides every element is divided by scalar `s`. This may be numerically
-  /// more accurate than multiplying by `1/s`.
+  /// Calculates element-wise power.
   ///
-  /// The returned tensor will have identical type and [tensorShape].
-  Tensor scaleInverse(num s) {
+  /// The formula for result element `i` is:
+  /// ```
+  /// pow(elements[i], right.elements[i]);
+  /// ```
+  ///
+  /// Throws [ArgumentError] if tensor shapes are not equal.
+  Tensor<T> pow(Tensor<T> right) {
     final builder = toBuilder();
-    builder.divScalar(s);
+    builder.pow(right);
     return builder.build();
   }
 
-  /// Calculates square of each element.
-  Tensor<T> clamp(T lowerLimit, T upperLimit) =>
-      (toBuilder()..clamp(lowerLimit, upperLimit)).build();
+  @Deprecated('Use `mulScalar`')
+  Tensor scale(num s) => mulScalar(s);
 
-  /// Calculates square of each element.
+  @Deprecated('Use `divScalar`')
+  Tensor scaleInverse(num s) => divScalar(s);
+
+  /// Calculates `sin(x)` for each element.
+  Tensor<T> sin() => (toBuilder()..sin()).build();
+
+  /// Calculates `x * x` (square) for each element.
+  ///
+  /// Throws [ArgumentError] if tensor shapes are not equal.
   Tensor<T> sq() => (toBuilder()..sq()).build();
 
-  /// Calculates square root of each element.
+  /// Calculates `sqrt(x)` (square root) for each element.
+  ///
+  /// Throws [ArgumentError] if tensor shapes are not equal.
   Tensor<T> sqrt() => (toBuilder()..sqrt()).build();
+
+  /// Calculates `tan(x)` for each element.
+  Tensor<T> tan() => (toBuilder()..tan()).build();
 
   /// Constructs a [TensorBuilder] that has this tensor.
   ///

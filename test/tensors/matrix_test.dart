@@ -184,7 +184,7 @@ void main() {
     });
 
     group('binary operators', () {
-      test('operator +', () {
+      test('x + y', () {
         final left = Float32Matrix.fromRows([
           [2.0, 3.0]
         ]);
@@ -205,7 +205,7 @@ void main() {
             ]));
       });
 
-      test('operator -', () {
+      test('x - y', () {
         final left = Float32Matrix.fromRowVector([2.0, 3.0]);
         final right = Float32Matrix.fromRowVector([1.0, 4.0]);
         expect(
@@ -215,7 +215,15 @@ void main() {
         expect(left - right, Float32Matrix.fromRowVector([1.0, -1.0]));
       });
 
-      test('operator *', () {
+      test('-x', () {
+        final matrix = Float32Matrix.fromRowVector([2.0, 3.0]);
+        expect(
+          -matrix,
+          Float32Matrix.fromRowVector([-2.0, -3.0]),
+        );
+      });
+
+      test('x * y', () {
         final left = Float32Matrix.fromRowVector([2.0, 3.0]);
         final right = Float32Matrix.fromRowVector([1.0, 4.0]);
         expect(
@@ -225,7 +233,7 @@ void main() {
         expect(left * right, Float32Matrix.fromRowVector([2.0, 12.0]));
       });
 
-      test('operator /', () {
+      test('x / y', () {
         final left = Float32Matrix.fromRowVector([2.0, 3.0]);
         final right = Float32Matrix.fromRowVector([1.0, 4.0]);
         expect(
@@ -237,22 +245,64 @@ void main() {
           Float32Matrix.fromRowVector([2.0, 0.75]),
         );
       });
-
-      test('scale', () {
+      test('divScalar(...)', () {
+        final matrix = Float32Matrix.fromRowVector([3.0, 6.0]);
+        expect(
+          matrix.divScalar(3.0),
+          Float32Matrix.fromRowVector([1.0, 2.0]),
+        );
+      });
+      test('divScalar(..., swapArguments: true)', () {
         final matrix = Float32Matrix.fromRowVector([2.0, 3.0]);
         expect(
-          matrix.scale(3.0),
+          matrix.divScalar(3.0, swapArguments: true),
+          Float32Matrix.fromRowVector([1.5, 1.0]),
+        );
+      });
+      test('exp()', () {
+        final matrix = Float32Matrix.fromRowVector([2.0, 3.0]);
+        expect(
+          matrix.exp(),
+          Float32Matrix.fromRowVector([7.389056205749512, 20.08553695678711]),
+        );
+      });
+      test('log()', () {
+        final matrix = Float32Matrix.fromRowVector([2.0, 3.0]);
+        expect(
+          matrix.log(),
+          Float32Matrix.fromRowVector([0.6931471824645996, 1.0986123085021973]),
+        );
+      });
+      test('max()', () {
+        final a = Float32Matrix.fromRowVector([2.0, 2.0]);
+        final b = Float32Matrix.fromRowVector([-3.0, 3.0]);
+        expect(
+          a.max(b),
+          Float32Matrix.fromRowVector([2.0, 3.0]),
+        );
+      });
+      test('min()', () {
+        final a = Float32Matrix.fromRowVector([2.0, 2.0]);
+        final b = Float32Matrix.fromRowVector([-3.0, 3.0]);
+        expect(
+          a.min(b),
+          Float32Matrix.fromRowVector([-3.0, 2.0]),
+        );
+      });
+      test('mulScalar(...)', () {
+        final matrix = Float32Matrix.fromRowVector([2.0, 3.0]);
+        expect(
+          matrix.mulScalar(3.0),
           Float32Matrix.fromRowVector([6.0, 9.0]),
         );
       });
-    });
-
-    test('operator - (unary)', () {
-      final matrix = Float32Matrix.fromRowVector([2.0, 3.0]);
-      expect(
-        -matrix,
-        Float32Matrix.fromRowVector([-2.0, -3.0]),
-      );
+      test('pow(...)', () {
+        final matrix = Float32Matrix.fromRowVector([0.0, 2.0]);
+        expect(
+          matrix.pow(Float32Matrix.fromRowVector([3.0, 3.0])),
+          Float32Matrix.fromRowVector([0.0, 8.0]),
+        );
+      });
     });
 
     test('transpose()', () {

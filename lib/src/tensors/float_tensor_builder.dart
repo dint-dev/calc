@@ -65,28 +65,47 @@ abstract class FloatTensorBuilder extends TensorBuilder<double> {
   }
 
   @override
-  void div(Tensor<double> right, {bool swapArguments = false}) {
+  void div(Tensor<double> right,
+      {bool noNan = false, bool swapArguments = false}) {
     _checkSameShape(right);
     final elements = this.elements;
     final rightElements = right.elements;
     final n = length;
+    final nan = noNan ? 0.0 : double.nan;
     if (swapArguments) {
       for (var i = 0; i < n; i++) {
-        elements[i] = rightElements[i] / elements[i];
+        final nominator = rightElements[i];
+        final denominator = elements[i];
+        elements[i] = denominator == 0.0 ? nan : nominator / denominator;
       }
     } else {
       for (var i = 0; i < n; i++) {
-        elements[i] /= rightElements[i];
+        final nominator = elements[i];
+        final denominator = rightElements[i];
+        elements[i] = denominator == 0.0 ? nan : nominator / denominator;
       }
     }
   }
 
   @override
-  void divScalar(num value) {
+  void divScalar(num value, {bool noNan = false, bool swapArguments = false}) {
+    value = value.toDouble();
     final elements = this.elements;
     final n = length;
-    for (var i = 0; i < n; i++) {
-      elements[i] /= value;
+    final nan = noNan ? 0.0 : double.nan;
+    if (swapArguments) {
+      for (var i = 0; i < n; i++) {
+        final denominator = elements[i];
+        elements[i] = denominator == 0.0 ? nan : value / denominator;
+      }
+    } else {
+      if (value == 0.0) {
+        fill(noNan ? 0.0 : double.nan);
+      } else {
+        for (var i = 0; i < n; i++) {
+          elements[i] /= value;
+        }
+      }
     }
   }
 
@@ -123,6 +142,28 @@ abstract class FloatTensorBuilder extends TensorBuilder<double> {
     final n = length;
     for (var i = 0; i < n; i++) {
       elements[i] = math.log(elements[i]);
+    }
+  }
+
+  @override
+  void max(Tensor<double> right) {
+    _checkSameShape(right);
+    final elements = this.elements;
+    final rightElements = right.elements;
+    final n = length;
+    for (var i = 0; i < n; i++) {
+      elements[i] = math.max(elements[i], rightElements[i]);
+    }
+  }
+
+  @override
+  void min(Tensor<double> right) {
+    _checkSameShape(right);
+    final elements = this.elements;
+    final rightElements = right.elements;
+    final n = length;
+    for (var i = 0; i < n; i++) {
+      elements[i] = math.min(elements[i], rightElements[i]);
     }
   }
 

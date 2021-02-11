@@ -53,6 +53,7 @@ abstract class Matrix<T> extends Tensor<T> {
   Matrix<T> operator -(Tensor<T> right) => super - right as Matrix<T>;
 
   @override
+  // ignore: invalid_override_of_non_virtual_member
   Matrix<T> operator /(Tensor<T> right) => super / right as Matrix<T>;
 
   /// Gets diagonal vector.
